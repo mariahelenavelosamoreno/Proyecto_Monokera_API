@@ -18,7 +18,7 @@ Este proyecto implementa un pipeline **ETL** para extraer datos de la API de **S
 
 ## 🏗️ Arquitectura
 
-![Arquitectura del Proyecto](https://docs/architecture.png)
+![Arquitectura del Proyecto](https://lucid.app/lucidchart/988d7156-d739-4fa9-be01-a13a76fd7a4e/view)
 
 ### Flujo principal:
 
