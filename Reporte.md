@@ -52,22 +52,22 @@ Para comprender la estructura y limitaciones de la fuente de datos, realicé una
 - La documentación completa se encuentra disponible en:
 https://api.spaceflightnewsapi.net/v4/docs
 
-- Se identificó que la API tiene un límite de 500 registros por solicitud, configurable a través del parámetro _limit. Para navegar por los datos históricos, también se provee el parámetro _start, que permite aplicar un sistema de paginación.
+- Se identificó que la API tiene un límite de 500 registros por solicitud, configurable a través del parámetro _limit.
 
 - A partir de este análisis, se diseñó una lógica de extracción basada en el uso de offset, de modo que se pueda obtener la totalidad de los datos disponibles en bloques de 500 sin duplicación.
-- 
+
 ***Blogs***
 <img width="1368" height="932" alt="image" src="https://github.com/user-attachments/assets/1eb3f20b-9333-4e2b-a4f6-df8189daa509" />
 
 ***Articles***
 <img width="1363" height="935" alt="image" src="https://github.com/user-attachments/assets/85ebf1e0-19a1-4c62-8a44-8d8a40284acc" />
 
-**Control de duplicados y continuidad**
+## Control de duplicados y continuidad
 Para evitar traer datos repetidos entre ejecuciones, se implementó un mecanismo de control de estado mediante archivos JSON (state/state_articles.json, state/state_blogs.json). Estos archivos almacenan el último offset procesado exitosamente, permitiendo que en cada nueva ejecución del pipeline, el proceso de extracción continúe desde el punto exacto en el que se detuvo anteriormente.
 
 Adicionalmente, los datos se extraen en orden cronológico ascendente (de los más antiguos a los más recientes), asegurando un orden lógico en la construcción del histórico y facilitando futuras estrategias de ingesta incremental por fecha (updatedAt).
 
-**Prevención de sobreescritura de archivos**
+## Prevención de sobreescritura de archivos
 Durante el proceso de carga en las capas RAW y STAGING, se implementó una convención de nombramiento de archivos basada en timestamp, utilizando el siguiente formato:
 
 `datetime = pd.Timestamp.now().strftime('%Y-%m-%d_%H-%M-%S')`.
@@ -80,7 +80,7 @@ Esta estrategia garantiza que:
 
 - Se mantenga un histórico de ejecuciones, útil para auditoría, backfills o comparación entre versiones de datos.
 
-**Exploración estructurada en notebooks**
+## Exploración estructurada en notebooks
 Todo el desarrollo inicial se realizó en Jupyter Notebooks, disponibles en el repositorio como:
 
 `api_articles.ipynb`
@@ -89,7 +89,7 @@ Todo el desarrollo inicial se realizó en Jupyter Notebooks, disponibles en el r
 
 Estos notebooks sirvieron como entorno de prototipado para validar la conexión con la API, analizar la estructura de los datos, detectar inconsistencias y diseñar la lógica de extracción y transformación antes de integrarla a los DAGs de Airflow.
 
-**Decisión de mantener las fuentes separadas**
+## Decisión de mantener las fuentes separadas
 Aunque los endpoints de articles y blogs comparten una estructura de columnas prácticamente idéntica, se optó por manejar su procesamiento de forma separada desde el inicio. Esta decisión responde a las siguientes buenas prácticas en ingeniería de datos:
 
 -Mantener independencia entre fuentes, facilitando trazabilidad y control por origen.
@@ -98,7 +98,7 @@ Aunque los endpoints de articles y blogs comparten una estructura de columnas pr
 
 -Adaptarse a futuras reglas de negocio o validaciones específicas para cada tipo de contenido.
 
-**Diagnóstico del Dataset**
+## Diagnóstico del Dataset
 Durante la exploración se realizaron las siguientes evaluaciones:
 
 -Valores nulos: Se detectó que columnas críticas como id, title y publishedAt no deben contener valores nulos, mientras que campos como summary o listas como launches y events pueden estar vacíos sin afectar la integridad del dato.
@@ -108,6 +108,8 @@ Durante la exploración se realizaron las siguientes evaluaciones:
 -Estructura de columnas: La estructura general incluye campos como id, title, summary, url, imageUrl, publishedAt, updatedAt, newsSite, launches, events, entre otros. Esta estructura es adecuada para construir una vista cronológica y temática del contenido informativo sobre misiones espaciales.
 
 <img width="472" height="462" alt="image" src="https://github.com/user-attachments/assets/6252063e-eea2-4deb-b6d8-61cfe56b2e76" />
+
+---
 
 ### desarrollo de la logica del pipeline DAG
 primero se realizo en notebooks (nombrar el nombre de los archivos) explicar mas o menos que
