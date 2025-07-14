@@ -66,7 +66,7 @@ https://api.spaceflightnewsapi.net/v4/docs
 <p align="center"><em><strong>Figura 3. Ejemplo de respuesta de la API Spaceflight Articles News analizada con Postman.</strong></em></p>
 
 
-## Control de duplicados y continuidad
+### Control de duplicados y continuidad
 Para evitar traer datos repetidos entre ejecuciones, se implementó un mecanismo de control de estado mediante archivos JSON (state/state_articles.json, state/state_blogs.json). Estos archivos almacenan el último offset procesado exitosamente, permitiendo que en cada nueva ejecución del pipeline, el proceso de extracción continúe desde el punto exacto en el que se detuvo anteriormente.
 
 Adicionalmente, los datos se extraen en orden cronológico ascendente (de los más antiguos a los más recientes), asegurando un orden lógico en la construcción del histórico y facilitando futuras estrategias de ingesta incremental por fecha (updatedAt).
@@ -157,37 +157,63 @@ Este DAG implementa un flujo ETL completo con cinco tareas principales:
 
 - Modularidad: Las funciones que realizan cada paso están separadas y documentadas, facilitando su reutilización y mantenimiento.
 
+## Validaciones Implementadas
+Para asegurar la calidad y confiabilidad de los datos a lo largo del pipeline ETL, se implementaron validaciones automáticas utilizando la librería Great Expectations. Las validaciones se ejecutan externamente tras la descarga de los archivos CSV para conservar los datos originales, incluso si presentan errores. Esto evita que el pipeline elimine o modifique información valiosa, facilitando trazabilidad, control y decisiones informadas por parte del cliente. Estas validaciones se aplican en dos etapas clave del proceso:
 
+- RAW: datos directamente extraídos de la API, sin transformaciones.
 
-### Validaciones Implementadas
-Se incluyen checks para:
+- STAGING: datos ya transformados y listos para su consumo.
 
-Existencia de columnas obligatorias (id, title, etc.)
-ser mas especifica con lo que realmente estoy haciendo en cada uno de los pasos de la validacion explicando el porque codigo 
+Cada conjunto de datos tiene su propia Expectation Suite definida en archivos JSON (raw.json y staging.json), y se ejecutan automáticamente dentro del DAG de Airflow.
 
-Formato correcto de fechas que fechas estoy cambiando, cuales y cuales agregue y porque agregar y no reemplarzar completamebnte
+### Validaciones en la capa RAW
 
-Valores no nulos en campos críticos, dar argumentos
+- No nulos en id :Se usa expect_column_values_to_not_be_null en la columna id, con mostly = 1.0, para asegurar que ningún registro tenga id vacío.
+Esto es crítico ya que el campo id es clave para la trazabilidad y posterior validación de duplicados.
 
-Tipos de datos esperados ser mas especificas en eso 
+- IDs únicos : Se usa expect_column_values_to_be_unique, validando que no haya duplicados en los identificadores dentro del archivo crudo.
+Esto garantiza que cada registro extraído represente una entidad distinta en la fuente.
 
-Unicidad de IDs
+- Estas validaciones están marcadas con stop_pipeline_on_failure = true en los metadatos, lo que significa que si se incumplen, el DAG se detiene para evitar procesar datos inconsistentes.
 
-### Retos Técnicos
-Manejo de paginación: la API tiene límite de 500 registros por request, se implementó paginación con control de offset.
+### Validaciones en la capa STAGING
 
-Validación robusta: uso de Great Expectations en etapas RAW y STAGING. una vez llega la data se validfa y una vez llega se valida nuevamebnte
+- No nulos en id: Se repite la validación para confirmar que el proceso de transformación no haya introducido valores vacíos.
 
-despliegue del servidor en docker
+- IDs únicos: Asegura que no se generaron duplicados durante el procesamiento.
 
+- Formato de fecha (published_at y updated_at): Se valida que ambas columnas de fecha respeten el formato %Y/%m/%d usando expect_column_values_to_match_strftime_format. Estas fechas fueron transformadas desde el formato original durante la etapa de STAGING. En lugar de sobrescribir las columnas originales, se optó por crear columnas auxiliares (published_datetime, updated_datetime) para conservar los datos crudos y facilitar auditorías o trazabilidad.
 
-### Mejoras Futuras
-- Almacenamiento en la nube (S3 o DW): Migrar los archivos locales a buckets en la nube para facilitar la escalabilidad y acceso distribuido.
-- Monitoreo con alertas Slack para notificar fallos y medir rendimiento.
-- Backfilling: Implementar mecanismos para reprocesar históricos de forma controlada. Ingesta completa inicial en el primer DAG: Agregar una lógica alternativa para realizar una descarga completa de los datos históricos. Se propone usar un bucle con paginación automática para obtener todos los registros disponibles.
-- Control incremental por updated_at: En lugar de fijar un límite estático de registros (como 1000), implementar un mecanismo que consulte la última fecha (updated_at) insertada por el DAG del día anterior y descargue solo los registros nuevos o actualizados:
-- CUANDO NO HAYA DATA QUE SOLO skip y no lance error que avise que no hay mas data oara extraer
+- Valores esperados en featured: Se utiliza expect_column_values_to_be_in_set para asegurar que el campo booleano featured contenga solo los valores true o false, evitando errores de tipo o registros mal formateados.
 
+### Uso de Great Expectations
+- Permite definir reglas declarativas, reutilizables y explícitas.
+
+- Facilita el análisis automático de errores y generación de reportes.
+
+- Se integra fácilmente con Airflow y pandas, sin necesidad de herramientas externas.
+
+## Retos Técnicos
+
+- **Manejo de paginación:**  La API de Spaceflight News impone un límite de 500 registros por solicitud. Para poder extraer más datos sin omitir información, se implementó una lógica de paginación controlada mediante `offset`, acumulando los resultados de forma iterativa hasta alcanzar el número deseado o agotar la fuente.
+
+- **Validación robusta con Great Expectations:**  Se definieron dos etapas de validación: una al finalizar la extracción (RAW) y otra después de la transformación (STAGING). Esto permite detectar errores tanto en el origen como en la lógica de procesamiento, mejorando la calidad y confiabilidad de los datos entregados.
+
+- **Despliegue del entorno con Docker:**  Se optó por usar **Docker** para garantizar la portabilidad del entorno y evitar los problemas comunes al instalar **Apache Airflow directamente en Windows**, como conflictos con dependencias, virtualenvs o errores en la inicialización del scheduler. Docker permitió encapsular toda la configuración del proyecto (Airflow, dependencias, rutas y volúmenes) en contenedores reproducibles, facilitando la ejecución en cualquier sistema operativo y asegurando coherencia entre entornos de desarrollo y producción.
+
+## 🚀 Mejoras Futuras
+
+- **Almacenamiento en la nube (S3 o Data Warehouse):**   Migrar los archivos CSV almacenados localmente a buckets en la nube como Amazon S3, Google Cloud Storage o un Data Warehouse. Esto facilitará el acceso distribuido, el versionamiento, la escalabilidad y la integración con sistemas analíticos o BI.
+
+- **Monitoreo y alertas automáticas:**  Integrar herramientas de monitoreo (como Slack o correo electrónico) para notificar fallos, validaciones fallidas o tareas omitidas. Esto mejoraría la visibilidad operativa y permitiría una respuesta más rápida ante errores.
+
+- **Backfilling controlado:**  Incorporar lógica de backfilling que permita reprocesar datos históricos sin interferir con los flujos diarios. Esto sería útil para nuevos modelos, corrección de errores o auditorías.
+
+- **Ingesta completa inicial (historical load):**  Diseñar un DAG alternativo capaz de extraer todo el histórico de datos disponibles mediante paginación completa. Esta lógica podría implementarse como un flujo one-time, aprovechando un bucle con `offset` hasta agotar los registros.
+
+- **Control incremental con `updated_at`:**  Implementar una lógica de ingesta que no dependa de un límite fijo de registros, sino que utilice la columna `updated_at` para consultar solo los datos nuevos o actualizados desde la última ejecución exitosa. Esto permitiría mantener el dataset actualizado en tiempo real.
+
+- **Gestión de ejecuciones sin nuevos datos:**  Añadir una condición al DAG para que, si no se detectan nuevos registros por extraer, simplemente se salte la ejecución sin lanzar errores, y registre un log que indique "sin cambios".
 ---
 
 ### Tiempos de Desarrollo
