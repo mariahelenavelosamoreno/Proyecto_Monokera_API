@@ -201,13 +201,13 @@ Esto garantiza que cada registro extraído represente una entidad distinta en la
 
 - **Despliegue del entorno con Docker:**  Se optó por usar **Docker** para garantizar la portabilidad del entorno y evitar los problemas comunes al instalar **Apache Airflow directamente en Windows**, como conflictos con dependencias, virtualenvs o errores en la inicialización del scheduler. Docker permitió encapsular toda la configuración del proyecto (Airflow, dependencias, rutas y volúmenes) en contenedores reproducibles, facilitando la ejecución en cualquier sistema operativo y asegurando coherencia entre entornos de desarrollo y producción.
 
-## 🔧 Configuración del Entorno con Docker
+##  Configuración del Entorno con Docker
 
 Para asegurar portabilidad, aislamiento de dependencias y facilitar la ejecución del pipeline en cualquier entorno, se utilizó **Docker** como contenedor principal para la arquitectura de Airflow.
 
 Se creó una configuración personalizada con los siguientes componentes:
 
-### 📄 `Dockerfile`
+###  `Dockerfile`
 
 Este archivo define la imagen base del entorno de ejecución, e incluye:
 
