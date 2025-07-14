@@ -111,7 +111,7 @@ Durante la exploración se realizaron las siguientes evaluaciones:
 
 - Estructura de columnas: La estructura general incluye campos como id, title, summary, url, imageUrl, publishedAt, updatedAt, newsSite, launches, events, entre otros. Esta estructura es adecuada para construir una vista cronológica y temática del contenido informativo sobre misiones espaciales.
 
-<img width="472" height="462" alt="image" src="https://github.com/user-attachments/assets/6252063e-eea2-4deb-b6d8-61cfe56b2e76" />
+<p align="center"><img width="472" height="462" alt="image" src="https://github.com/user-attachments/assets/6252063e-eea2-4deb-b6d8-61cfe56b2e76" />
 <p align="center"><em><strong>Figura 4. Estructura del DataFrame tras extracción de la API.</strong></em></p>
 
 
