@@ -1,3 +1,6 @@
+hablar sobre de que se trata y decir que se necesita para ejecutar el proyecto pero si se quiere ver informarcion mas detallada se encuentra en el reporte.md 
+
+
 # Apache Airflow con Docker
 
 ![Airflow Logo](https://airflow.apache.org/images/feature-image.png)
