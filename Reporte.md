@@ -15,6 +15,7 @@ Este proyecto implementa un pipeline **ETL** para extraer datos de la API de **S
 #  Arquitectura
 
 <img width="1880" height="1055" alt="Diagrama de Arquitectura ETL API_ Spaceflight News (2)" src="https://github.com/user-attachments/assets/8c06c5ab-128b-44f4-af91-2e6650eac9de" />
+***Figura 1. Diagrama de arquitectura del pipeline ETL para la API de Spaceflight News.***
 
 ### Flujo principal:
 
@@ -56,11 +57,13 @@ https://api.spaceflightnewsapi.net/v4/docs
 
 - A partir de este análisis, se diseñó una lógica de extracción basada en el uso de offset, de modo que se pueda obtener la totalidad de los datos disponibles en bloques de 500 sin duplicación.
 
-***Blogs***
-<img width="1368" height="932" alt="image" src="https://github.com/user-attachments/assets/1eb3f20b-9333-4e2b-a4f6-df8189daa509" />
 
-***Articles***
+<img width="1368" height="932" alt="image" src="https://github.com/user-attachments/assets/1eb3f20b-9333-4e2b-a4f6-df8189daa509" />
+***Figura 2. Ejemplo de respuesta de la API Spaceflight Blogs News analizada con Postman***
+
+
 <img width="1363" height="935" alt="image" src="https://github.com/user-attachments/assets/85ebf1e0-19a1-4c62-8a44-8d8a40284acc" />
+***Figura 3. Ejemplo de respuesta de la API Spaceflight Articles News analizada con Postman***
 
 ## Control de duplicados y continuidad
 Para evitar traer datos repetidos entre ejecuciones, se implementó un mecanismo de control de estado mediante archivos JSON (state/state_articles.json, state/state_blogs.json). Estos archivos almacenan el último offset procesado exitosamente, permitiendo que en cada nueva ejecución del pipeline, el proceso de extracción continúe desde el punto exacto en el que se detuvo anteriormente.
@@ -108,7 +111,7 @@ Durante la exploración se realizaron las siguientes evaluaciones:
 - Estructura de columnas: La estructura general incluye campos como id, title, summary, url, imageUrl, publishedAt, updatedAt, newsSite, launches, events, entre otros. Esta estructura es adecuada para construir una vista cronológica y temática del contenido informativo sobre misiones espaciales.
 
 <img width="472" height="462" alt="image" src="https://github.com/user-attachments/assets/6252063e-eea2-4deb-b6d8-61cfe56b2e76" />
-
+***Figura 4. Estructura del DataFrame tras extracción de la API***
 
 ## Desarrollo de la lógica del pipeline DAG
 El pipeline ETL fue desarrollado inicialmente en los notebooks api_articles.ipynb y api_blogs.ipynb, donde se validó paso a paso la lógica de extracción, transformación y validación de datos. Posteriormente, esta lógica fue migrada a un DAG de Apache Airflow, permitiendo una ejecución orquestada y programada del flujo completo.
@@ -138,7 +141,7 @@ Este DAG implementa un flujo ETL completo con cinco tareas principales:
 - End_ETL: Marca el fin del flujo e imprime el timestamp final de ejecución.
 
 <img width="1123" height="262" alt="image" src="https://github.com/user-attachments/assets/bf7c34aa-5f22-45b4-8a35-293dd8d0a168" />
-
+***Figura 5. DAG de Airflow***
 
 ### Características clave del DAG
 
