@@ -201,7 +201,7 @@ Esto garantiza que cada registro extraído represente una entidad distinta en la
 
 - **Despliegue del entorno con Docker:**  Se optó por usar **Docker** para garantizar la portabilidad del entorno y evitar los problemas comunes al instalar **Apache Airflow directamente en Windows**, como conflictos con dependencias, virtualenvs o errores en la inicialización del scheduler. Docker permitió encapsular toda la configuración del proyecto (Airflow, dependencias, rutas y volúmenes) en contenedores reproducibles, facilitando la ejecución en cualquier sistema operativo y asegurando coherencia entre entornos de desarrollo y producción.
 
-## 🚀 Mejoras Futuras
+##  Mejoras Futuras
 
 - **Almacenamiento en la nube (S3 o Data Warehouse):**   Migrar los archivos CSV almacenados localmente a buckets en la nube como Amazon S3, Google Cloud Storage o un Data Warehouse. Esto facilitará el acceso distribuido, el versionamiento, la escalabilidad y la integración con sistemas analíticos o BI.
 
