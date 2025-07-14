@@ -92,20 +92,20 @@ Estos notebooks sirvieron como entorno de prototipado para validar la conexión 
 ## Decisión de mantener las fuentes separadas
 Aunque los endpoints de articles y blogs comparten una estructura de columnas prácticamente idéntica, se optó por manejar su procesamiento de forma separada desde el inicio. Esta decisión responde a las siguientes buenas prácticas en ingeniería de datos:
 
--Mantener independencia entre fuentes, facilitando trazabilidad y control por origen.
+- Mantener independencia entre fuentes, facilitando trazabilidad y control por origen.
 
--Permitir la ejecución paralela o desacoplada de los pipelines.
+- Permitir la ejecución paralela o desacoplada de los pipelines.
 
--Adaptarse a futuras reglas de negocio o validaciones específicas para cada tipo de contenido.
+- Adaptarse a futuras reglas de negocio o validaciones específicas para cada tipo de contenido.
 
 ## Diagnóstico del Dataset
 Durante la exploración se realizaron las siguientes evaluaciones:
 
--Valores nulos: Se detectó que columnas críticas como id, title y publishedAt no deben contener valores nulos, mientras que campos como summary o listas como launches y events pueden estar vacíos sin afectar la integridad del dato.
+- Valores nulos: Se detectó que columnas críticas como id, title y publishedAt no deben contener valores nulos, mientras que campos como summary o listas como launches y events pueden estar vacíos sin afectar la integridad del dato.
 
--Tipos de variables: Se confirmó que los datos llegan como strings (para texto y fechas), enteros (para IDs) y listas (para relaciones). Se definieron transformaciones para convertir fechas al formato YYYY/MM/DD, validar consistencia en tipos y eliminar datos inconsistentes.
+- Tipos de variables: Se confirmó que los datos llegan como strings (para texto y fechas), enteros (para IDs) y listas (para relaciones). Se definieron transformaciones para convertir fechas al formato YYYY/MM/DD, validar consistencia en tipos y eliminar datos inconsistentes.
 
--Estructura de columnas: La estructura general incluye campos como id, title, summary, url, imageUrl, publishedAt, updatedAt, newsSite, launches, events, entre otros. Esta estructura es adecuada para construir una vista cronológica y temática del contenido informativo sobre misiones espaciales.
+- Estructura de columnas: La estructura general incluye campos como id, title, summary, url, imageUrl, publishedAt, updatedAt, newsSite, launches, events, entre otros. Esta estructura es adecuada para construir una vista cronológica y temática del contenido informativo sobre misiones espaciales.
 
 <img width="472" height="462" alt="image" src="https://github.com/user-attachments/assets/6252063e-eea2-4deb-b6d8-61cfe56b2e76" />
 
