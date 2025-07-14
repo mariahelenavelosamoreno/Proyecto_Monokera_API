@@ -9,7 +9,7 @@ Para información técnica detallada sobre el diseño del pipeline, consulta el 
 
 ![Airflow Logo](https://airflow.apache.org/images/feature-image.png)
 
-## 🐳 Inicialización de Airflow con Docker
+##  Inicialización de Airflow con Docker
 
 ### Requisitos para Windows
 Si estás en Windows, necesitarás:
@@ -18,13 +18,13 @@ Si estás en Windows, necesitarás:
 
 🔗 [Descargar Docker Desktop](https://www.docker.com/products/docker-desktop)
 
-### 🚀 Despliegue
+###  Despliegue
 Ejecuta el siguiente comando para iniciar el contenedor (se evita correr docker run solo por simplicidad, en cuanto a variables de entorno y configuraciones):
 ```bash
 docker-compose up
 ```
 
-### 🔑 Acceso al servidor
+###  Acceso al servidor
 - El servidor estará disponible en: [http://localhost:8080](http://localhost:8080)
 - Credenciales:
   - Usuario: `admin`
@@ -32,13 +32,13 @@ docker-compose up
 
 ---
 
-## 🐍 Configuración adicional para entorno local (Python Notebooks)
+##  Configuración adicional para entorno local (Python Notebooks)
 
 ### Requisitos
 - Python 3.10 instalado
 - Se recomienda usar un entorno virtual
 
-### 🛠 Configuración del entorno virtual
+###  Configuración del entorno virtual
 
 **Windows:**
 ```powershell
@@ -56,12 +56,12 @@ python -m venv venv
 source venv/bin/activate
 ```
 
-### 📦 Instalación de dependencias
+###  Instalación de dependencias
 ```bash
 pip install -r requirements.txt
 ```
 
-### 🚪 Para salir del entorno virtual
+###  Para salir del entorno virtual
 ```bash
 deactivate
 ```
