@@ -116,7 +116,7 @@ Validación robusta: uso de Great Expectations en etapas RAW y STAGING.
 
 Paralelización: validaciones se ejecutan en paralelo con transformaciones para eficiencia.
 
-**Tiempos de Desarrollo**
+### Tiempos de Desarrollo
 
 | Etapa                              | Tiempo estimado |
 |------------------------------------|-----------------|
@@ -127,7 +127,7 @@ Paralelización: validaciones se ejecutan en paralelo con transformaciones para 
 | Configuración del ambiente Docker  | 5 horas         |
 | Documentación y ajustes finales    | 4 horas         |
 
-###Mejoras Futuras
+### Mejoras Futuras
 - Almacenamiento en la nube (S3 o GCS): Migrar los archivos locales a buckets en la nube para facilitar la escalabilidad y acceso distribuido.
 - Monitoreo con alertas y métricas: Integrar herramientas como Prometheus + Grafana o Airflow + Slack para notificar fallos y medir rendimiento.
 - Pruebas unitarias automáticas: Incorporar testing en los scripts de transformación y validación con pytest.
