@@ -47,7 +47,9 @@ En este caso, aún no se ha implementado debido a que no se cuenta con requerimi
 - **Great Expectations** (Validación)  
 - **Docker** (Entorno de ejecución)
 
-## titulo que encapsule lo de abajo
+---
+
+## Desarrollo Técnico del Pipeline ETL: Análisis, Construcción, Validación y Despliegue
 
 ## analisis preeliminar 
 PONER PANTALLAZO DE RESULTADOS REELEVANTES
@@ -83,6 +85,16 @@ Validación robusta: uso de Great Expectations en etapas RAW y STAGING. una vez 
 
 despliegue del servidor en docker
 
+
+### Mejoras Futuras
+- Almacenamiento en la nube (S3 o DW): Migrar los archivos locales a buckets en la nube para facilitar la escalabilidad y acceso distribuido.
+- Monitoreo con alertas Slack para notificar fallos y medir rendimiento.
+- Backfilling: Implementar mecanismos para reprocesar históricos de forma controlada. Ingesta completa inicial en el primer DAG: Agregar una lógica alternativa para realizar una descarga completa de los datos históricos. Se propone usar un bucle con paginación automática para obtener todos los registros disponibles.
+- Control incremental por updated_at: En lugar de fijar un límite estático de registros (como 1000), implementar un mecanismo que consulte la última fecha (updated_at) insertada por el DAG del día anterior y descargue solo los registros nuevos o actualizados:
+- CUANDO NO HAYA DATA QUE SOLO skip y no lance error que avise que no hay mas data oara extraer
+
+---
+
 ### Tiempos de Desarrollo
 
 | Etapa                              | Tiempo estimado |
@@ -94,12 +106,6 @@ despliegue del servidor en docker
 | Configuración del ambiente Docker  | 5 horas         |
 | Documentación y ajustes finales    | 4 horas         |
 
-### Mejoras Futuras
-- Almacenamiento en la nube (S3 o DW): Migrar los archivos locales a buckets en la nube para facilitar la escalabilidad y acceso distribuido.
-- Monitoreo con alertas Slack para notificar fallos y medir rendimiento.
-- Backfilling: Implementar mecanismos para reprocesar históricos de forma controlada. Ingesta completa inicial en el primer DAG: Agregar una lógica alternativa para realizar una descarga completa de los datos históricos. Se propone usar un bucle con paginación automática para obtener todos los registros disponibles.
-- Control incremental por updated_at: En lugar de fijar un límite estático de registros (como 1000), implementar un mecanismo que consulte la última fecha (updated_at) insertada por el DAG del día anterior y descargue solo los registros nuevos o actualizados:
-- CUANDO NO HAYA DATA QUE SOLO skip y no lance error que avise que no hay mas data oara extraer 
 
 ### Recursos
 - [Documentación oficial de Spaceflight News API](https://api.spaceflightnewsapi.net/v4/docs/)
