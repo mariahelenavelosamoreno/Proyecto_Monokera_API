@@ -20,7 +20,7 @@ Si estás en Windows, necesitarás:
 🔗 [Descargar Docker Desktop](https://www.docker.com/products/docker-desktop)
 
 ###  Despliegue
-Ejecuta el siguiente comando para iniciar el contenedor (se evita correr docker run solo por simplicidad, en cuanto a variables de entorno y configuraciones):
+Ejecuta el siguiente comando para iniciar el contenedor. Se utiliza docker-compose en lugar de docker run para simplificar la configuración de variables de entorno, volúmenes y otros parámetros del entorno de ejecución.
 ```bash
 docker-compose up
 ```
