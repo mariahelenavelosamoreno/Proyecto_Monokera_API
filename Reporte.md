@@ -19,6 +19,8 @@ Este proyecto implementa un pipeline **ETL** para extraer datos de la API de **S
 ##  Arquitectura
 
 [Ver Diagrama de Arquitectura en Lucidchart](https://lucid.app/lucidchart/988d7156-d739-4fa9-be01-a13a76fd7a4e/view)
+<img width="1880" height="1055" alt="Diagrama de Arquitectura ETL API_ Spaceflight News (2)" src="https://github.com/user-attachments/assets/8c06c5ab-128b-44f4-af91-2e6650eac9de" />
+
 
 ### Flujo principal:
 
