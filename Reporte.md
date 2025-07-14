@@ -128,13 +128,17 @@ Este DAG implementa un flujo ETL completo con cinco tareas principales:
 
 - Start_ETL: Inicia el flujo y registra una marca temporal. Esto es útil para auditoría y control de ejecuciones.
 
-- Extract_and_save_raw_csv: Realiza la extracción de datos desde el endpoint de blogs utilizando paginación (limit=500 y offset incremental). La lógica se apoya en un archivo state/state_blogs.json que guarda el último offset procesado, lo cual evita duplicados en ejecuciones futuras. Los datos extraídos se almacenan en formato CSV en la carpeta raw/, usando un timestamp en el nombre del archivo para prevenir sobreescrituras. Aplica transformaciones básicas: eliminación de duplicados, estandarización de fechas (published_at, updated_at), limpieza de texto, y tipos de datos consistentes. Guarda los datos transformados en la carpeta staging/, también con un timestamp en el nombre del archivo.
+- Extract_and_save_raw_csv: Realiza la extracción de datos desde el endpoint de blogs utilizando paginación (limit=500 y offset incremental). La lógica se apoya en un archivo state/state_blogs.json que guarda el último offset procesado, lo cual evita duplicados en ejecuciones futuras. Los datos extraídos se almacenan en formato CSV en la carpeta raw/, usando un timestamp en el nombre del archivo para prevenir sobreescrituras.
+- Transform_and_save_staging_csv: aplica transformaciones esenciales como la eliminación de duplicados, la estandarización del formato de fechas en las columnas published_at y updated_at, y la limpieza de campos textuales para asegurar uniformidad. También convierte los tipos de datos según lo requerido. Finalmente, guarda el resultado en la carpeta staging/, utilizando un nombre de archivo con timestamp para evitar sobrescrituras y mantener trazabilidad entre ejecuciones.
 
 - Validate_raw: Realiza validaciones de calidad sobre los datos en crudo (RAW) usando Great Expectations. Se verifica la presencia de columnas obligatorias, tipos de datos, unicidad de IDs y formato de fechas.
 
 - Validate_staging Aplica una segunda capa de validación sobre los datos transformados (STAGING), asegurando que las reglas de negocio se cumplan antes de su uso analítico.
 
 - End_ETL: Marca el fin del flujo e imprime el timestamp final de ejecución.
+
+<img width="1123" height="262" alt="image" src="https://github.com/user-attachments/assets/bf7c34aa-5f22-45b4-8a35-293dd8d0a168" />
+
 
 ### Características clave del DAG
 
