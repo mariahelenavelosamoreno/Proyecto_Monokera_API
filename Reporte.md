@@ -214,28 +214,21 @@ Este archivo define la imagen base del entorno de ejecución, e incluye:
 - Instalación de **dependencias específicas** como `pandas`, `requests`, `great_expectations`, y otras necesarias para el funcionamiento del pipeline.
 - Configuración del entorno de trabajo y copia de los scripts ETL.
 
-### docker-compose.yml
+### `docker-compose.yml`
 Este archivo orquesta los servicios necesarios para ejecutar Apache Airflow en contenedores aislados. Se incluyen:
 
-airflow-webserver
+- airflow-webserver
+- airflow-scheduler
+- airflow-worker
+- postgres como backend
+- redis para el broker de mensajes
+- airflow-init para inicializar el entorno
+  
+- ***Algunos parámetros clave***:
 
-airflow-scheduler
-
-airflow-worker
-
-postgres como backend
-
-redis para el broker de mensajes
-
-airflow-init para inicializar el entorno
-
-- Algunos parámetros clave:
-
-Montaje de volúmenes locales (./dags, ./logs, ./plugins)
-
-Exposición de puertos (por ejemplo, 8080 para la interfaz web de Airflow)
-
-Persistencia de datos en volúmenes de Docker
+- Montaje de volúmenes locales (./dags, ./logs, ./plugins)
+- Exposición de puertos (por ejemplo, 8080 para la interfaz web de Airflow)
+- Persistencia de datos en volúmenes de Docker
 
 
 ##  Mejoras Futuras
