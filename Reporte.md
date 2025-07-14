@@ -110,10 +110,45 @@ Durante la exploración se realizaron las siguientes evaluaciones:
 <img width="472" height="462" alt="image" src="https://github.com/user-attachments/assets/6252063e-eea2-4deb-b6d8-61cfe56b2e76" />
 
 
-### desarrollo de la logica del pipeline DAG
-primero se realizo en notebooks (nombrar el nombre de los archivos) explicar mas o menos que
-explicar realmente como funciona el codigo y como funciona el script y decir que estas estan orquestadas por el dag 
-PANTALLAZO DEL DAG
+## Desarrollo de la lógica del pipeline DAG
+El pipeline ETL fue desarrollado inicialmente en los notebooks api_articles.ipynb y api_blogs.ipynb, donde se validó paso a paso la lógica de extracción, transformación y validación de datos. Posteriormente, esta lógica fue migrada a un DAG de Apache Airflow, permitiendo una ejecución orquestada y programada del flujo completo.
+
+- Para mantener la modularidad y trazabilidad del origen de datos, se diseñaron dos pipelines separados: uno para blogs y otro para artículos, a pesar de que ambos comparten la misma estructura de columnas. Esta separación permite:
+
+- Trazabilidad por fuente
+
+- Validaciones diferenciadas
+
+- Escalabilidad y mantenibilidad del sistema
+
+- Posible ejecución paralela
+
+###DAG spaceflight_blogs_etl y spaceflight_articles_etl
+Este DAG implementa un flujo ETL completo con cinco tareas principales:
+
+- Start_ETL: Inicia el flujo y registra una marca temporal. Esto es útil para auditoría y control de ejecuciones.
+
+- Extract_and_save_raw_csv: Realiza la extracción de datos desde el endpoint de blogs utilizando paginación (limit=500 y offset incremental). La lógica se apoya en un archivo state/state_blogs.json que guarda el último offset procesado, lo cual evita duplicados en ejecuciones futuras. Los datos extraídos se almacenan en formato CSV en la carpeta raw/, usando un timestamp en el nombre del archivo para prevenir sobreescrituras. Aplica transformaciones básicas: eliminación de duplicados, estandarización de fechas (published_at, updated_at), limpieza de texto, y tipos de datos consistentes. Guarda los datos transformados en la carpeta staging/, también con un timestamp en el nombre del archivo.
+
+- Validate_raw: Realiza validaciones de calidad sobre los datos en crudo (RAW) usando Great Expectations. Se verifica la presencia de columnas obligatorias, tipos de datos, unicidad de IDs y formato de fechas.
+
+- Validate_staging Aplica una segunda capa de validación sobre los datos transformados (STAGING), asegurando que las reglas de negocio se cumplan antes de su uso analítico.
+
+- End_ETL: Marca el fin del flujo e imprime el timestamp final de ejecución.
+
+### Características clave del DAG
+
+- Orquestación declarativa: Cada tarea está conectada mediante operadores >>, lo que permite un seguimiento visual del flujo.
+
+- Reintentos y tolerancia a fallos: Airflow permite configurar reintentos automáticos para cada tarea en caso de error.
+
+- XComs: Se utilizan para compartir resultados intermedios entre tareas, como el path del archivo CSV generado o el DataFrame en formato JSON.
+
+- Validación robusta: Ambas capas (RAW y STAGING) son validadas de manera independiente usando suites definidas en archivos JSON (expectations/).
+
+- Modularidad: Las funciones que realizan cada paso están separadas y documentadas, facilitando su reutilización y mantenimiento.
+
+
 
 ### Validaciones Implementadas
 Se incluyen checks para:
