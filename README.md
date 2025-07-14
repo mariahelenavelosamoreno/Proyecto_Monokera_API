@@ -3,7 +3,7 @@
 ### Descripción General
 
 Este proyecto utiliza Apache Airflow en Docker para automatizar un proceso ETL. A continuación, se detallan los requisitos y pasos necesarios para configurar el entorno de ejecución.
-Para información técnica detallada sobre el diseño del pipeline, consulta el archivo REPORTE.md.
+Para información técnica detallada sobre el diseño del pipeline, consulta el archivo Reporte.md.
 
 # Apache Airflow con Docker
 
