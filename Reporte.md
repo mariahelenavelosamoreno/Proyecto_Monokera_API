@@ -21,14 +21,24 @@ Este proyecto implementa un pipeline **ETL** para extraer datos de la API de **S
 <img width="1880" height="1055" alt="Diagrama de Arquitectura ETL API_ Spaceflight News (2)" src="https://github.com/user-attachments/assets/8c06c5ab-128b-44f4-af91-2e6650eac9de" />
 
 
-### Flujo principal:
+## Flujo principal:
 
 1. **Extracción:** Consumo de API → Datos RAW  
 2. **Transformación:** Limpieza y formateo → Datos STAGING  
 3. **Validación:** Verificación de calidad  
 4. **Carga:** Generación de archivos finales
 
-hablar de arquitectura medalluium 
+### Modelo de Arquitectura por Capas (Medallion Architecture)
+El flujo principal del pipeline sigue una estructura basada en la arquitectura Medallion, que organiza el tratamiento de los datos en capas sucesivas para mejorar su calidad, trazabilidad y gobernanza.
+
+Actualmente, se implementan las siguientes capas:
+
+- Capa RAW (Bronze): Corresponde a la extracción directa de datos desde la API de Spaceflight News. Esta capa almacena los datos en su forma más cruda, sin transformaciones ni filtrado, y sirve como respaldo fiel del origen para trazabilidad y reprocesos. En este proyecto, esta capa se encuentra representada por la carpeta /raw.
+
+- Capa STAGING (Silver): Representa los datos ya transformados y limpios. En esta etapa se realiza el formateo de fechas, normalización de tipos, eliminación de nulos críticos y otras transformaciones ligeras. El objetivo es dejar los datos listos para análisis o pasos posteriores. Se materializa en la carpeta /staging.
+
+- Capa GOLD (no implementada aún): Esta capa normalmente contiene datos enriquecidos, consolidados o listos para ser consumidos por el negocio o herramientas de BI.
+En este caso, aún no se ha implementado debido a que no se cuenta con requerimientos específicos del negocio sobre cómo deben ser los datos finales ni qué métricas o indicadores se desean construir. La construcción de esta capa dependerá directamente del conocimiento del dominio y de los objetivos analíticos definidos por los stakeholders. Esto puede incluir agregaciones, joins con otras fuentes o cálculos complejos específicos para reportes.
 
 ### Componentes:
 
