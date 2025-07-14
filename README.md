@@ -1,5 +1,9 @@
-hablar sobre de que se trata y decir que se necesita para ejecutar el proyecto pero si se quiere ver informarcion mas detallada se encuentra en el reporte.md 
+## Configuración del Entorno para Ejecutar el Proyecto
 
+### Descripción General
+
+Este proyecto utiliza Apache Airflow en Docker para automatizar un proceso ETL. A continuación, se detallan los requisitos y pasos necesarios para configurar el entorno de ejecución.
+Para información técnica detallada sobre el diseño del pipeline, consulta el archivo REPORTE.md.
 
 # Apache Airflow con Docker
 
