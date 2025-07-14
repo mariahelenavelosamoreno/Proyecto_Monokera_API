@@ -48,9 +48,7 @@ Este proyecto implementa un pipeline **ETL** para extraer datos de la API de **S
 
 Clona el repositorio:
 
-```bash
-git clone https://github.com/tu-usuario/spaceflight-etl.git
-cd spaceflight-etl
+
 
 Inicia Airflow con Docker:
 
@@ -118,33 +116,30 @@ Validación robusta: uso de Great Expectations en etapas RAW y STAGING.
 
 Paralelización: validaciones se ejecutan en paralelo con transformaciones para eficiencia.
 
-⏱️ Tiempos de Desarrollo
-Etapa	Tiempo estimado
-Diseño de arquitectura	2 horas
-Implementación ETL básico	4 horas
-Integración con Airflow	3 horas
-Validaciones y manejo de errores	5 horas
-Documentación y ajustes finales	2 horas
+**Tiempos de Desarrollo**
 
-📈 Mejoras Futuras
-💾 Almacenamiento en la nube (S3 o GCS)
+| Etapa                              | Tiempo estimado |
+|------------------------------------|-----------------|
+| Diseño de arquitectura             | 2 horas         |
+| Implementación ETL básico          | 4 horas         |
+| Integración con Airflow            | 3 horas         |
+| Validaciones y manejo de errores   | 5 horas         |
+| Configuración del ambiente Docker  | 5 horas         |
+| Documentación y ajustes finales    | 4 horas         |
 
-📊 Monitoreo con alertas y métricas
+###Mejoras Futuras
+- Almacenamiento en la nube (S3 o GCS): Migrar los archivos locales a buckets en la nube para facilitar la escalabilidad y acceso distribuido.
+- Monitoreo con alertas y métricas: Integrar herramientas como Prometheus + Grafana o Airflow + Slack para notificar fallos y medir rendimiento.
+- Pruebas unitarias automáticas: Incorporar testing en los scripts de transformación y validación con pytest.
+- CI/CD con GitHub Actions: Automatizar pruebas, validaciones y despliegues del pipeline.
+- Backfilling: Implementar mecanismos para reprocesar históricos de forma controlada.
+- Ingesta completa inicial en el primer DAG: Agregar una lógica alternativa para realizar una descarga completa de los datos históricos. Se propone usar un bucle con paginación automática para obtener todos los registros disponibles.
+- Control incremental por updated_at: En lugar de fijar un límite estático de registros (como 1000), implementar un mecanismo que consulte la última fecha (updated_at) insertada por el DAG del día anterior y descargue solo los registros nuevos o actualizados:
 
-🧪 Pruebas unitarias automáticas
+### Recursos
+- [Documentación oficial de Spaceflight News API](https://api.spaceflightnewsapi.net/v4/docs/)
+- [Apache Airflow Documentation](https://airflow.apache.org/docs/)
+- [Great Expectations Documentation](https://docs.greatexpectations.io/docs/home/)
+- [Docker Docs](https://docs.docker.com/)
 
-🔁 CI/CD con GitHub Actions
-
-📆 Backfilling para reprocesar históricos
-
-📚 Recursos
-Documentación oficial de Spaceflight News API
-
-Apache Airflow Documentation
-
-Great Expectations Documentation
-
-yaml
-Copiar
-Editar
 
