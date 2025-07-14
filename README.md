@@ -1,12 +1,12 @@
-# 🛰️ Proyecto ETL para Spaceflight News API
+# Proyecto ETL para Spaceflight News API
 
-## 📌 Descripción del Proyecto
+##  Descripción del Proyecto
 
 Este proyecto implementa un pipeline **ETL** para extraer datos de la API de **Spaceflight News** (artículos y blogs), transformarlos y cargarlos en archivos CSV. El sistema está construido con **Python** y **Apache Airflow**, permitiendo ejecuciones programadas y monitoreo del flujo de datos.
 
 ---
 
-## 🎯 Objetivos
+## Objetivos
 
 - Extraer hasta **1000 registros** de los endpoints `/articles` y `/blogs`  
 - Transformar los campos de fecha al formato `YYYY/MM/DD`  
@@ -16,7 +16,7 @@ Este proyecto implementa un pipeline **ETL** para extraer datos de la API de **S
 
 ---
 
-## 🏗️ Arquitectura
+##  Arquitectura
 
 ![Arquitectura del Proyecto](https://lucid.app/lucidchart/988d7156-d739-4fa9-be01-a13a76fd7a4e/view)
 
@@ -36,7 +36,7 @@ Este proyecto implementa un pipeline **ETL** para extraer datos de la API de **S
 
 ---
 
-## 🛠️ Configuración
+##  Configuración
 
 ### Requisitos previos
 
