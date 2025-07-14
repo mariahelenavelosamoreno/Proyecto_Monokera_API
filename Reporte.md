@@ -15,7 +15,7 @@ Este proyecto implementa un pipeline **ETL** para extraer datos de la API de **S
 #  Arquitectura
 
 <img width="1880" height="1055" alt="Diagrama de Arquitectura ETL API_ Spaceflight News (2)" src="https://github.com/user-attachments/assets/8c06c5ab-128b-44f4-af91-2e6650eac9de" />
-*** Figura 1. Diagrama de arquitectura del pipeline ETL para la API de Spaceflight News.
+<p><em><strong>Figura 1. Diagrama de arquitectura del pipeline ETL para la API de Spaceflight News.</strong></em></p>
 
 ### Flujo principal:
 
