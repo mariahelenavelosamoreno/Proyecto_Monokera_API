@@ -246,8 +246,7 @@ Persistencia de datos en volúmenes de Docker
 
 - **Backfilling controlado:**  Incorporar lógica de backfilling que permita reprocesar datos históricos sin interferir con los flujos diarios. Esto sería útil para nuevos modelos, corrección de errores o auditorías.
 
-- **Ingesta completa inicial (historical load):**  Diseñar un DAG alternativo capaz de extraer todo el histórico de datos disponibles mediante paginación completa. Esta lógica podría implementarse como un flujo one-time, aprovechando un bucle con `offset` hasta agotar los registros.
-# Código para Extracción Histórica Completa (ETL)
+- **Ingesta completa inicial (historical load):**  Diseñar un DAG alternativo capaz de extraer todo el histórico de datos disponibles mediante paginación completa. Esta lógica podría implementarse como un flujo one-time, aprovechando un bucle con `offset` hasta agotar los registros. Propuesta para Extracción Histórica Completa (ETL)
 
 `def Extract_full_historical_load(**kwargs):
     ti = kwargs['ti']
