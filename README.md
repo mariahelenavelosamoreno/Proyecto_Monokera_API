@@ -11,20 +11,8 @@ Si estás en Windows, necesitarás:
 
 🔗 [Descargar Docker Desktop](https://www.docker.com/products/docker-desktop)
 
-### Configuración inicial
-1. Obtén el archivo `docker-compose.yml` oficial de Airflow:
-   ```bash
-   curl -LfO 'https://airflow.apache.org/docs/apache-airflow/stable/docker-compose.yaml'
-   ```
-   (Para desarrollo, puedes extraer solo el primer contenedor)
-
-2. Configura las variables de entorno:
-   ```bash
-   export AIRFLOW_PROJ_DIR=$(pwd)
-   ```
-
 ### 🚀 Despliegue
-Ejecuta el siguiente comando para iniciar los contenedores:
+Ejecuta el siguiente comando para iniciar el contenedor (se evita correr docker run solo por simplicidad, en cuanto a variables de entorno y configuraciones):
 ```bash
 docker-compose up
 ```
