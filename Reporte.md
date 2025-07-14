@@ -1,10 +1,10 @@
 # Proyecto ETL para Spaceflight News API
 
-##  Descripción del Proyecto
+#  Descripción del Proyecto
 
 Este proyecto implementa un pipeline **ETL** para extraer datos de la API de **Spaceflight News** (artículos y blogs), transformarlos y cargarlos en archivos CSV. El sistema está construido con **Python** y **Apache Airflow**, permitiendo ejecuciones programadas y monitoreo del flujo de datos.
 
-## Objetivos
+# Objetivos
 
 - Extraer hasta **1000 registros** de los endpoints `/articles` y `/blogs`  
 - Transformar los campos de fecha al formato `YYYY/MM/DD`  
@@ -12,11 +12,11 @@ Este proyecto implementa un pipeline **ETL** para extraer datos de la API de **S
 - Implementar validaciones de calidad de datos  
 - Crear un pipeline **automatizado y reproducible**
 
-##  Arquitectura
+#  Arquitectura
 
 <img width="1880" height="1055" alt="Diagrama de Arquitectura ETL API_ Spaceflight News (2)" src="https://github.com/user-attachments/assets/8c06c5ab-128b-44f4-af91-2e6650eac9de" />
 
-## Flujo principal:
+### Flujo principal:
 
 1. **Extracción:** Consumo de API → Datos RAW  
 2. **Transformación:** Limpieza y formateo → Datos STAGING  
@@ -43,9 +43,9 @@ En este caso, aún no se ha implementado debido a que no se cuenta con requerimi
 - **Great Expectations** (Validación)  
 - **Docker** (Entorno de ejecución)
 
-## Desarrollo Técnico del Pipeline ETL: Análisis, Construcción, Validación y Despliegue
+# Desarrollo Técnico del Pipeline ETL: Análisis, Construcción, Validación y Despliegue
 
-## Analisis preeliminar
+### Analisis preeliminar
 
 Para comprender la estructura y limitaciones de la fuente de datos, realicé una exploración inicial utilizando Postman, una herramienta que facilita la visualización, prueba y análisis de endpoints de APIs REST. A través de esta herramienta se evaluó el comportamiento del endpoint /articles y /blogs de la API pública de Spaceflight News:
 
@@ -67,7 +67,7 @@ Para evitar traer datos repetidos entre ejecuciones, se implementó un mecanismo
 
 Adicionalmente, los datos se extraen en orden cronológico ascendente (de los más antiguos a los más recientes), asegurando un orden lógico en la construcción del histórico y facilitando futuras estrategias de ingesta incremental por fecha (updatedAt).
 
-## Prevención de sobreescritura de archivos
+### Prevención de sobreescritura de archivos
 Durante el proceso de carga en las capas RAW y STAGING, se implementó una convención de nombramiento de archivos basada en timestamp, utilizando el siguiente formato:
 
 `datetime = pd.Timestamp.now().strftime('%Y-%m-%d_%H-%M-%S')`.
@@ -80,7 +80,7 @@ Esta estrategia garantiza que:
 
 - Se mantenga un histórico de ejecuciones, útil para auditoría, backfills o comparación entre versiones de datos.
 
-## Exploración estructurada en notebooks
+### Exploración estructurada en notebooks
 Todo el desarrollo inicial se realizó en Jupyter Notebooks, disponibles en el repositorio como:
 
 `api_articles.ipynb`
@@ -89,7 +89,7 @@ Todo el desarrollo inicial se realizó en Jupyter Notebooks, disponibles en el r
 
 Estos notebooks sirvieron como entorno de prototipado para validar la conexión con la API, analizar la estructura de los datos, detectar inconsistencias y diseñar la lógica de extracción y transformación antes de integrarla a los DAGs de Airflow.
 
-## Decisión de mantener las fuentes separadas
+### Decisión de mantener las fuentes separadas
 Aunque los endpoints de articles y blogs comparten una estructura de columnas prácticamente idéntica, se optó por manejar su procesamiento de forma separada desde el inicio. Esta decisión responde a las siguientes buenas prácticas en ingeniería de datos:
 
 - Mantener independencia entre fuentes, facilitando trazabilidad y control por origen.
@@ -109,7 +109,6 @@ Durante la exploración se realizaron las siguientes evaluaciones:
 
 <img width="472" height="462" alt="image" src="https://github.com/user-attachments/assets/6252063e-eea2-4deb-b6d8-61cfe56b2e76" />
 
----
 
 ### desarrollo de la logica del pipeline DAG
 primero se realizo en notebooks (nombrar el nombre de los archivos) explicar mas o menos que
