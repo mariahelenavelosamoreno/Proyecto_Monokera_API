@@ -1,1 +1,16 @@
 *env*/
+airflow/logs/*
+airflow/airflow.cfg
+airflow/unittests.cfg
+airflow/airflow.db
+airflow/airflow-webserver.pid
+airflow/airflow-scheduler.pid
+airflow/standalone_admin_password.txt
+airflow/webserver_config.py
+airflow/dags/__pycache__
+raw/
+staging/
+state/
+
+
+
