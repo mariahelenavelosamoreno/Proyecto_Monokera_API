@@ -30,12 +30,12 @@ El flujo principal del pipeline sigue una estructura basada en la arquitectura M
 
 Actualmente, se implementan las siguientes capas:
 
-- Capa RAW (Bronze): Corresponde a la extracción directa de datos desde la API de Spaceflight News. Esta capa almacena los datos en su forma más cruda, sin transformaciones ni filtrado, y sirve como respaldo fiel del origen para trazabilidad y reprocesos. En este proyecto, esta capa se encuentra representada por la carpeta /raw.
+- Capa `RAW` (Bronze): Corresponde a la extracción directa de datos desde la API de Spaceflight News. Esta capa almacena los datos en su forma más cruda, sin transformaciones ni filtrado, y sirve como respaldo fiel del origen para trazabilidad y reprocesos. En este proyecto, esta capa se encuentra representada por la carpeta `/raw`.
 
-- Capa STAGING (Silver): Representa los datos ya transformados y limpios. En esta etapa se realiza el formateo de fechas, normalización de tipos, eliminación de nulos críticos y otras transformaciones ligeras. El objetivo es dejar los datos listos para análisis o pasos posteriores. Se materializa en la carpeta /staging.
+- Capa `STAGING` (Silver): Representa los datos ya transformados y limpios. En esta etapa se realiza el formateo de fechas, normalización de tipos, eliminación de nulos críticos y otras transformaciones ligeras. El objetivo es dejar los datos listos para análisis o pasos posteriores. Se materializa en la carpeta `/staging`.
 
-- Capa GOLD (no implementada aún): Esta capa normalmente contiene datos enriquecidos, consolidados o listos para ser consumidos por el negocio o herramientas de BI.
-En este caso, aún no se ha implementado debido a que no se cuenta con requerimientos específicos del negocio sobre cómo deben ser los datos finales ni qué métricas o indicadores se desean construir. La construcción de esta capa dependerá directamente del conocimiento del dominio y de los objetivos analíticos definidos por los stakeholders. Esto puede incluir agregaciones, joins con otras fuentes o cálculos complejos específicos para reportes.
+- Capa `GOLD` (no implementada aún): Esta capa normalmente contiene datos enriquecidos, consolidados o listos para ser consumidos por el negocio o herramientas de BI.
+En este caso, aún no se ha implementado debido a que no se cuenta con requerimientos específicos del negocio sobre cómo deben ser los datos finales ni qué métricas o indicadores se desean construir. La construcción de esta capa dependerá directamente del conocimiento del dominio y de los objetivos analíticos definidos por los stakeholders. Esto puede incluir agregaciones, `joins` con otras fuentes o cálculos complejos específicos para reportes.
 
 ### Componentes:
 
@@ -53,7 +53,7 @@ Para comprender la estructura y limitaciones de la fuente de datos, realicé una
 - La documentación completa se encuentra disponible en:
 https://api.spaceflightnewsapi.net/v4/docs
 
-- Se identificó que la API tiene un límite de 500 registros por solicitud, configurable a través del parámetro `_limit`.
+- Se identificó que la API tiene un límite de 500 registros por solicitud, configurable a través del parámetro `limit`.
 
 - A partir de este análisis, se diseñó una lógica de extracción basada en el uso de `offset`, de modo que se pueda obtener la totalidad de los datos disponibles en bloques de 500 sin duplicación.
 
@@ -72,7 +72,7 @@ Para evitar traer datos repetidos entre ejecuciones, se implementó un mecanismo
 Adicionalmente, los datos se extraen en orden cronológico ascendente (de los más antiguos a los más recientes), asegurando un orden lógico en la construcción del histórico y facilitando futuras estrategias de ingesta incremental por fecha (`updatedAt`).
 
 ### Prevención de sobreescritura de archivos
-Durante el proceso de carga en las capas RAW y STAGING, se implementó una convención de nombramiento de archivos basada en timestamp, utilizando el siguiente formato:
+Durante el proceso de carga en las capas `RAW` y `STAGING`, se implementó una convención de nombramiento de archivos basada en `timestamp`, utilizando el siguiente formato:
 
 `datetime = pd.Timestamp.now().strftime('%Y-%m-%d_%H-%M-%S')`.
 
@@ -107,7 +107,7 @@ Durante la exploración se realizaron las siguientes evaluaciones:
 
 - Valores nulos: Se detectó que columnas críticas como `id`, `title` y `publishedAt` no deben contener valores nulos, mientras que campos como summary o listas como launches y events pueden estar vacíos sin afectar la integridad del dato.
 
-- Tipos de variables: Se confirmó que los datos llegan como strings (para texto y fechas), enteros (para IDs) y listas (para relaciones). Se definieron transformaciones para convertir fechas al formato `YYYY/MM/DD`, validar consistencia en tipos y eliminar datos inconsistentes.
+- Tipos de variables: Se confirmó que los datos llegan como `strings` (para texto y fechas), enteros (para `IDs`) y listas (para relaciones). Se definieron transformaciones para convertir fechas al formato `YYYY/MM/DD`, validar consistencia en tipos y eliminar datos inconsistentes.
 
 - Estructura de columnas: La estructura general incluye campos como `id, title, summary, url, imageUrl, publishedAt, updatedAt, newsSite, launches, events`, entre otros. Esta estructura es adecuada para construir una vista cronológica y temática del contenido informativo sobre misiones espaciales.
 
@@ -124,57 +124,53 @@ Este DAG implementa un flujo ETL completo con cinco tareas principales:
 - `Start_ETL`: Inicia el flujo y registra una marca temporal. Esto es útil para auditoría y control de ejecuciones.
 
 - `Extract_and_save_raw_csv`: Realiza la extracción de datos desde el endpoint de blogs utilizando paginación (`limit=500` y `offset incremental`). La lógica se apoya en un archivo `state/state_blogs.json` que guarda el último offset procesado, lo cual evita duplicados en ejecuciones futuras. Los datos extraídos se almacenan en formato CSV en la carpeta `raw/`, usando un timestamp en el nombre del archivo para prevenir sobreescrituras.
-- `Transform_and_save_staging_csv`: aplica transformaciones esenciales como la eliminación de duplicados, la estandarización del formato de fechas en las columnas `published_at` y `updated_at`, y la limpieza de campos textuales para asegurar uniformidad. También convierte los tipos de datos según lo requerido. Finalmente, guarda el resultado en la carpeta staging/, utilizando un nombre de archivo con timestamp para evitar sobrescrituras y mantener trazabilidad entre ejecuciones.
+- `Transform_and_save_staging_csv`: aplica transformaciones esenciales como la eliminación de duplicados, la estandarización del formato de fechas en las columnas `published_at` y `updated_at`, y la limpieza de campos textuales para asegurar uniformidad. También convierte los tipos de datos según lo requerido. Finalmente, guarda el resultado en la carpeta `staging/`, utilizando un nombre de archivo con timestamp para evitar sobrescrituras y mantener trazabilidad entre ejecuciones.
 
-- `Validate_raw`: Realiza validaciones de calidad sobre los datos en crudo (RAW) usando Great Expectations. Se verifica la presencia de columnas obligatorias, tipos de datos, unicidad de IDs y formato de fechas.
+- `Validate_raw`: Realiza validaciones de calidad sobre los datos en crudo (`RAW`) usando Great Expectations. Se verifica la presencia de columnas obligatorias, tipos de datos, unicidad de IDs y formato de fechas.
 
-- `Validate_staging`: Aplica una segunda capa de validación sobre los datos transformados (STAGING), asegurando que las reglas de negocio se cumplan antes de su uso analítico.
+- `Validate_staging`: Aplica una segunda capa de validación sobre los datos transformados (`STAGING`), asegurando que las reglas de negocio se cumplan antes de su uso analítico.
 
-- `End_ETL`: Marca el fin del flujo e imprime el timestamp final de ejecución.
+- `End_ETL`: Marca el fin del flujo e imprime el `timestamp` final de ejecución.
 
 <img width="1123" height="262" alt="image" src="https://github.com/user-attachments/assets/bf7c34aa-5f22-45b4-8a35-293dd8d0a168" />
 <p align="center"><em><strong>Figura 5. DAG de Airflow.</strong></em></p>
 
 ### Características clave del DAG
 
-- Orquestación declarativa: Cada tarea está conectada mediante operadores >>, lo que permite un seguimiento visual del flujo.
+- Orquestación declarativa: Cada tarea está conectada mediante operadores `>>`, lo que permite un seguimiento visual del flujo.
 
 - Reintentos y tolerancia a fallos: Airflow permite configurar reintentos automáticos para cada tarea en caso de error.
 
-- XComs: Se utilizan para compartir resultados intermedios entre tareas, como el path del archivo CSV generado o el DataFrame en formato JSON.
+- XComs: Se utilizan para compartir resultados intermedios entre tareas, como el path del archivo CSV generado o el DataFrame en formato `JSON`.
 
-- Validación robusta: Ambas capas (RAW y STAGING) son validadas de manera independiente usando suites definidas en archivos JSON (expectations/).
+- Validación robusta: Ambas capas (`RAW` y `STAGING`) son validadas de manera independiente usando suites definidas en archivos `JSON` (`expectations/`).
 
 - Modularidad: Las funciones que realizan cada paso están separadas y documentadas, facilitando su reutilización y mantenimiento.
 
 ## Validaciones Implementadas
 Para asegurar la calidad y confiabilidad de los datos a lo largo del pipeline ETL, se implementaron validaciones automáticas utilizando la librería Great Expectations. Las validaciones se ejecutan externamente tras la descarga de los archivos CSV para conservar los datos originales, incluso si presentan errores. Esto evita que el pipeline elimine o modifique información valiosa, facilitando trazabilidad, control y decisiones informadas por parte del cliente. Estas validaciones se aplican en dos etapas clave del proceso:
 
-- RAW: datos directamente extraídos de la API, sin transformaciones.
+- `RAW`
 
-- STAGING: datos ya transformados y listos para su consumo.
+-`STAGING`
 
 Cada conjunto de datos tiene su propia Expectation Suite definida en archivos JSON (`raw.json y staging.json`), y se ejecutan automáticamente dentro del DAG de Airflow.
 
-### Validaciones en la capa RAW
+### Validaciones en la capa `RAW`
 
-- No nulos en id :Se usa expect_column_values_to_not_be_null en la columna id, con mostly = 1.0, para asegurar que ningún registro tenga id vacío.
-Esto es crítico ya que el campo id es clave para la trazabilidad y posterior validación de duplicados.
+- No nulos en id :Se usa `expect_column_values_to_not_be_null` en la columna `id`, para asegurar que ningún registro tenga id vacío. Esto es crítico ya que el campo id es clave para la trazabilidad y posterior validación de duplicados.
 
-- IDs únicos : Se usa expect_column_values_to_be_unique, validando que no haya duplicados en los identificadores dentro del archivo crudo.
-Esto garantiza que cada registro extraído represente una entidad distinta en la fuente.
+- `IDs` únicos : Se usa `expect_column_values_to_be_unique`, validando que no haya duplicados en los identificadores dentro del archivo crudo. Esto garantiza que cada registro extraído represente una entidad distinta en la fuente.
 
-- Estas validaciones están marcadas con stop_pipeline_on_failure = true en los metadatos, lo que significa que si se incumplen, el DAG se detiene para evitar procesar datos inconsistentes.
+### Validaciones en la capa `STAGING`
 
-### Validaciones en la capa STAGING
+- No nulos en `id`: Se repite la validación para confirmar que el proceso de transformación no haya introducido valores vacíos.
 
-- No nulos en id: Se repite la validación para confirmar que el proceso de transformación no haya introducido valores vacíos.
+- `IDs` únicos: Asegura que no se generaron duplicados durante el procesamiento.
 
-- IDs únicos: Asegura que no se generaron duplicados durante el procesamiento.
+- Formato de fecha (`published_at y updated_at`): Se valida que ambas columnas de fecha respeten el formato `%Y/%m/%d` usando `expect_column_values_to_match_strftime_format`. Estas fechas fueron transformadas desde el formato original durante la etapa de `STAGING`. En lugar de sobrescribir las columnas originales, se optó por crear columnas auxiliares (`published_datetime, updated_datetime`) para conservar los datos crudos y facilitar auditorías o trazabilidad.
 
-- Formato de fecha (`published_at y updated_at`): Se valida que ambas columnas de fecha respeten el formato `%Y/%m/%d` usando expect_column_values_to_match_strftime_format. Estas fechas fueron transformadas desde el formato original durante la etapa de STAGING. En lugar de sobrescribir las columnas originales, se optó por crear columnas auxiliares (`published_datetime, updated_datetime`) para conservar los datos crudos y facilitar auditorías o trazabilidad.
-
-- Valores esperados en featured: Se utiliza expect_column_values_to_be_in_set para asegurar que el campo booleano featured contenga solo los valores true o false, evitando errores de tipo o registros mal formateados.
+- Valores esperados en featured: Se utiliza `expect_column_values_to_be_in_set` para asegurar que el campo booleano featured contenga solo los valores true o false, evitando errores de tipo o registros mal formateados.
 
 ### Uso de Great Expectations
 - Permite definir reglas declarativas, reutilizables y explícitas.
@@ -187,7 +183,7 @@ Esto garantiza que cada registro extraído represente una entidad distinta en la
 
 - **Manejo de paginación:**  La API de Spaceflight News impone un límite de 500 registros por solicitud. Para poder extraer más datos sin omitir información, se implementó una lógica de paginación controlada mediante `offset`, acumulando los resultados de forma iterativa hasta alcanzar el número deseado o agotar la fuente.
 
-- **Validación robusta con Great Expectations:**  Se definieron dos etapas de validación: una al finalizar la extracción (RAW) y otra después de la transformación (STAGING). Esto permite detectar errores tanto en el origen como en la lógica de procesamiento, mejorando la calidad y confiabilidad de los datos entregados.
+- **Validación robusta con Great Expectations:**  Se definieron dos etapas de validación: una al finalizar la extracción (`RAW`) y otra después de la transformación (`STAGING`). Esto permite detectar errores tanto en el origen como en la lógica de procesamiento, mejorando la calidad y confiabilidad de los datos entregados.
 
 - **Despliegue del entorno con Docker:**  Se optó por usar **Docker** para garantizar la portabilidad del entorno y evitar los problemas comunes al instalar **Apache Airflow directamente en Windows**, como conflictos con dependencias, virtualenvs o errores en la inicialización del scheduler. Docker permitió encapsular toda la configuración del proyecto (Airflow, dependencias, rutas y volúmenes) en contenedores reproducibles, facilitando la ejecución en cualquier sistema operativo y asegurando coherencia entre entornos de desarrollo y producción. 
 
@@ -196,44 +192,38 @@ Esto garantiza que cada registro extraído represente una entidad distinta en la
 Para asegurar portabilidad, aislamiento de dependencias y facilitar la ejecución del pipeline en cualquier entorno, se utilizó **Docker** como contenedor principal para la arquitectura de Airflow.
 
 Se creó una configuración personalizada con los siguientes componentes:
+### `Dockerfile`
 
-###  `Dockerfile`
+Este archivo define la imagen base del entorno de ejecución e incluye:
 
-Este archivo define la imagen base del entorno de ejecución, e incluye:
-
-- Instalación de **dependencias específicas** como `pandas`,  `great_expectations`, y otras necesarias para el funcionamiento del pipeline.
-- Configuración del entorno de trabajo y copia de los scripts ETL.
+- Instalación de **dependencias específicas** como `pandas`, `great_expectations` y otras necesarias para el funcionamiento del pipeline, partiendo de una imagen predefinida de Apache Airflow.
+- Configuración del entorno de trabajo para los scripts ETL.
 
 ### `docker-compose.yml`
-Este archivo orquesta los servicios necesarios para ejecutar Apache Airflow en contenedores aislados. Se incluyen:
 
-- airflow-webserver
-- airflow-scheduler
-- airflow-worker
-- postgres como backend
-- redis para el broker de mensajes
-- airflow-init para inicializar el entorno
-  
-- ***Algunos parámetros clave***:
+Este archivo orquesta un contenedor que ejecuta Apache Airflow en modo standalone, ideal para entornos de desarrollo sin necesidad de una arquitectura distribuida.
 
-- Montaje de volúmenes locales (./dags, ./logs, ./plugins)
-- Exposición de puertos (por ejemplo, 8080 para la interfaz web de Airflow)
-- Persistencia de datos en volúmenes de Docker
-
+- **Algunos parámetros clave**:
+  - Montaje de volúmenes locales (`./dags`, `./logs`, `./plugins`) para facilitar el desarrollo y la persistencia.
+  - Exposición de puertos (por ejemplo, el 8080 para acceder a la interfaz web de Airflow).
+  - Persistencia de datos a través de volúmenes de Docker.
+  - Inclusión de variables de entorno dentro del contenedor para configurar el entorno de ejecución.
+  - Finalmente, el `docker-compose` hace referencia al `Dockerfile` para construir la imagen personalizada.
 
 ##  Mejoras Futuras
 
-- **Almacenamiento en la nube (S3 o Data Warehouse):**   Migrar los archivos CSV almacenados localmente a buckets en la nube como Amazon S3, Google Cloud Storage o un Data Warehouse. Esto facilitará el acceso distribuido, el versionamiento, la escalabilidad y la integración con sistemas analíticos o BI.
+- **Almacenamiento en la nube (S3 o Data Warehouse):** Migrar los archivos CSV almacenados localmente a buckets en la nube como Amazon S3, Google Cloud Storage o a un Data Warehouse. Esto facilitaría el acceso distribuido, el control de versiones, la escalabilidad y la integración con sistemas analíticos o herramientas de BI.
 
-- **Monitoreo y alertas automáticas:**  Integrar herramientas de monitoreo (como Slack o correo electrónico) para notificar fallos, validaciones fallidas o tareas omitidas. Esto mejoraría la visibilidad operativa y permitiría una respuesta más rápida ante errores.
+- **Monitoreo y alertas automáticas:** Integrar herramientas de monitoreo como Slack o correo electrónico para notificar errores, validaciones fallidas o tareas omitidas. Esto mejoraría la visibilidad operativa y permitiría una respuesta más rápida ante posibles fallos.
 
-- **Backfilling controlado:**  Incorporar lógica de backfilling que permita reprocesar datos históricos sin interferir con los flujos diarios. Esto sería útil para nuevos modelos, corrección de errores o auditorías.
+- **Ingesta completa inicial (historical load):** Diseñar un DAG alternativo capaz de extraer todo el histórico de datos disponibles mediante paginación completa. Esta lógica podría implementarse como un flujo de ejecución única (`one-time`), utilizando un bucle con `offset` hasta agotar todos los registros. Propuesta: script de extracción histórica `Extract_historical_data.py`.
 
-- **Ingesta completa inicial (historical load):**  Diseñar un DAG alternativo capaz de extraer todo el histórico de datos disponibles mediante paginación completa. Esta lógica podría implementarse como un flujo one-time, aprovechando un bucle con `offset` hasta agotar los registros. Propuesta para Extracción Histórica Completa (ETL) `Extract_historical_data.py`
+- **Control incremental con `updated_at`:** Implementar una lógica de ingesta que no dependa de un límite fijo de registros, sino que utilice la columna `updated_at` para consultar únicamente los datos nuevos o modificados desde la última ejecución exitosa. Esto permitiría mantener actualizado el dataset en tiempo casi real.
 
-- **Control incremental con `updated_at`:**  Implementar una lógica de ingesta que no dependa de un límite fijo de registros, sino que utilice la columna `updated_at` para consultar solo los datos nuevos o actualizados desde la última ejecución exitosa. Esto permitiría mantener el dataset actualizado en tiempo real.
+- **Gestión de ejecuciones sin nuevos datos:** Añadir una condición al DAG que permita omitir la ejecución si no se detectan nuevos registros por extraer, evitando errores innecesarios y registrando un log informativo con el mensaje "sin cambios".
 
-- **Gestión de ejecuciones sin nuevos datos:**  Añadir una condición al DAG para que, si no se detectan nuevos registros por extraer, simplemente se salte la ejecución sin lanzar errores, y registre un log que indique "sin cambios".
+- **Registro de estado (`state`) para trazabilidad:** Registrar el estado (`state`) de cada ejecución en una base de datos junto con la fecha correspondiente, con el fin de mantener un control histórico, mejorar la trazabilidad y prevenir fallos o duplicidades en futuras ejecuciones.
+
 ---
 
 ### Tiempos de Desarrollo
