@@ -1,0 +1,33 @@
+{
+  "data_asset_type": null,
+  "expectation_suite_name": "raw_data_id_validation",
+  "expectations": [
+    {
+      "expectation_type": "expect_column_values_to_not_be_null",
+      "kwargs": {
+        "column": "id",
+        "mostly": 1.0
+      },
+      "meta": {
+        "notes": "El campo ID no debe contener valores nulos",
+        "stop_pipeline_on_failure": true
+      }
+    },
+    {
+      "expectation_type": "expect_column_values_to_be_unique",
+      "kwargs": {
+        "column": "id"
+      },
+      "meta": {
+        "notes": "El campo ID debe contener valores únicos",
+        "stop_pipeline_on_failure": true
+      }
+    }
+  ],
+  "ge_cloud_id": null,
+  "meta": {
+    "dataset_name": "raw_data",
+    "great_expectations_version": "0.15.0",
+    "validation_purpose": "Garantizar la integridad de los IDs en datos crudos"
+  }
+}
