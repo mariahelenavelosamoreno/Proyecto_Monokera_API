@@ -107,7 +107,7 @@ Durante la exploración se realizaron las siguientes evaluaciones:
 
 - Valores nulos: Se detectó que columnas críticas como `id`, `title` y `publishedAt` no deben contener valores nulos, mientras que campos como summary o listas como launches y events pueden estar vacíos sin afectar la integridad del dato.
 
-- Tipos de variables: Se confirmó que los datos llegan como `strings` (para texto y fechas), enteros (para `IDs`) y listas (para relaciones). Se definieron transformaciones para convertir fechas al formato `YYYY/MM/DD`, validar consistencia en tipos y eliminar datos inconsistentes.
+- Tipos de variables: Se confirmó que los datos llegan como `strings` (para texto y fechas), enteros (para `ids`) y listas (para relaciones). Se definieron transformaciones para convertir fechas al formato `YYYY/MM/DD`, validar consistencia en tipos y eliminar datos inconsistentes.
 
 - Estructura de columnas: La estructura general incluye campos como `id, title, summary, url, imageUrl, publishedAt, updatedAt, newsSite, launches, events`, entre otros. Esta estructura es adecuada para construir una vista cronológica y temática del contenido informativo sobre misiones espaciales.
 
@@ -126,7 +126,7 @@ Este DAG implementa un flujo ETL completo con cinco tareas principales:
 - `Extract_and_save_raw_csv`: Realiza la extracción de datos desde el endpoint de blogs utilizando paginación (`limit=500` y `offset incremental`). La lógica se apoya en un archivo `state/state_blogs.json` que guarda el último offset procesado, lo cual evita duplicados en ejecuciones futuras. Los datos extraídos se almacenan en formato CSV en la carpeta `raw/`, usando un timestamp en el nombre del archivo para prevenir sobreescrituras.
 - `Transform_and_save_staging_csv`: aplica transformaciones esenciales como la eliminación de duplicados, la estandarización del formato de fechas en las columnas `published_at` y `updated_at`, y la limpieza de campos textuales para asegurar uniformidad. También convierte los tipos de datos según lo requerido. Finalmente, guarda el resultado en la carpeta `staging/`, utilizando un nombre de archivo con timestamp para evitar sobrescrituras y mantener trazabilidad entre ejecuciones.
 
-- `Validate_raw`: Realiza validaciones de calidad sobre los datos en crudo (`RAW`) usando Great Expectations. Se verifica la presencia de columnas obligatorias, tipos de datos, unicidad de IDs y formato de fechas.
+- `Validate_raw`: Realiza validaciones de calidad sobre los datos en crudo (`RAW`) usando Great Expectations. Se verifica la presencia de columnas obligatorias, tipos de datos, unicidad de ids y formato de fechas.
 
 - `Validate_staging`: Aplica una segunda capa de validación sobre los datos transformados (`STAGING`), asegurando que las reglas de negocio se cumplan antes de su uso analítico.
 
@@ -148,11 +148,7 @@ Este DAG implementa un flujo ETL completo con cinco tareas principales:
 - Modularidad: Las funciones que realizan cada paso están separadas y documentadas, facilitando su reutilización y mantenimiento.
 
 ## Validaciones Implementadas
-Para asegurar la calidad y confiabilidad de los datos a lo largo del pipeline ETL, se implementaron validaciones automáticas utilizando la librería Great Expectations. Las validaciones se ejecutan externamente tras la descarga de los archivos CSV para conservar los datos originales, incluso si presentan errores. Esto evita que el pipeline elimine o modifique información valiosa, facilitando trazabilidad, control y decisiones informadas por parte del cliente. Estas validaciones se aplican en dos etapas clave del proceso:
-
-- `RAW`
-
--`STAGING`
+Para asegurar la calidad y confiabilidad de los datos a lo largo del pipeline ETL, se implementaron validaciones automáticas utilizando la librería Great Expectations. Las validaciones se ejecutan externamente tras la descarga de los archivos CSV para conservar los datos originales, incluso si presentan errores. Esto evita que el pipeline elimine o modifique información valiosa, facilitando trazabilidad, control y decisiones informadas por parte del cliente. Estas validaciones se aplican en dos etapas clave del proceso: `RAW` y `STAGING`
 
 Cada conjunto de datos tiene su propia Expectation Suite definida en archivos JSON (`raw.json y staging.json`), y se ejecutan automáticamente dentro del DAG de Airflow.
 
@@ -160,13 +156,13 @@ Cada conjunto de datos tiene su propia Expectation Suite definida en archivos JS
 
 - No nulos en id :Se usa `expect_column_values_to_not_be_null` en la columna `id`, para asegurar que ningún registro tenga id vacío. Esto es crítico ya que el campo id es clave para la trazabilidad y posterior validación de duplicados.
 
-- `IDs` únicos : Se usa `expect_column_values_to_be_unique`, validando que no haya duplicados en los identificadores dentro del archivo crudo. Esto garantiza que cada registro extraído represente una entidad distinta en la fuente.
+- `ids` únicos : Se usa `expect_column_values_to_be_unique`, validando que no haya duplicados en los identificadores dentro del archivo crudo. Esto garantiza que cada registro extraído represente una entidad distinta en la fuente.
 
 ### Validaciones en la capa `STAGING`
 
 - No nulos en `id`: Se repite la validación para confirmar que el proceso de transformación no haya introducido valores vacíos.
 
-- `IDs` únicos: Asegura que no se generaron duplicados durante el procesamiento.
+- `ids` únicos: Asegura que no se generaron duplicados durante el procesamiento.
 
 - Formato de fecha (`published_at y updated_at`): Se valida que ambas columnas de fecha respeten el formato `%Y/%m/%d` usando `expect_column_values_to_match_strftime_format`. Estas fechas fueron transformadas desde el formato original durante la etapa de `STAGING`. En lugar de sobrescribir las columnas originales, se optó por crear columnas auxiliares (`published_datetime, updated_datetime`) para conservar los datos crudos y facilitar auditorías o trazabilidad.
 
